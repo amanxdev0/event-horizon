@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EVENT HORIZON — A Scroll-Driven Dive Into a Black Hole</title>
+<meta name="description" content="EVENT HORIZON: a cinematic scroll-driven 3D dive from deep space into the heart of a black hole. Built with Three.js." />
+<link rel="stylesheet" href="css/style.css?v=1" />
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+
+<canvas id="film" aria-hidden="true"></canvas>
+<div id="redveil" aria-hidden="true"></div>
+<div id="blackveil" aria-hidden="true"></div>
+
+<header class="hud hud-top">
+  <div class="hud-title">EVENT&nbsp;HORIZON</div>
+  <div class="hud-fps"><span id="fps">--</span> FPS</div>
+</header>
+
+<div class="hud hud-bottom">
+  <div class="hud-zone" id="zone">DEEP SPACE</div>
+  <div class="hud-dist">DISTANCE TO SINGULARITY&nbsp;&nbsp;<span id="dist">--</span></div>
+  <div class="hud-progress"><div id="bar"></div></div>
+</div>
+
+<div id="nogl" hidden>
+  <h1>EVENT HORIZON</h1>
+  <p>This experience needs WebGL. Please open it in a modern browser with hardware acceleration enabled — then scroll to fall in.</p>
+</div>
+
+<main id="chapters">
+
+  <section class="chapter hero" id="ch0">
+    <div class="chapter-inner">
+      <p class="kicker">A SCROLL-DRIVEN FILM</p>
+      <h1 class="hero-title">EVENT<br/>HORIZON</h1>
+      <p class="lede">Forty thousand light-years from Earth, a darkness heavier than fifteen suns is waiting. You are falling toward it.</p>
+      <p class="scroll-hint">SCROLL&nbsp;&nbsp;↓&nbsp;&nbsp;TO&nbsp;FALL&nbsp;IN</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch1">
+    <div class="chapter-inner">
+      <p class="kicker">02 · ACCRETION DISK</p>
+      <h2>The Ring of Fire</h2>
+      <p>Doomed matter spirals inward at half the speed of light, crushed and heated until it outshines entire galaxies. This is the brightest thing you will ever see — and it is the glow of things being destroyed.</p>
+      <ul class="facts">
+        <li><span>DISK TEMP</span><b>10⁷ K</b></li>
+        <li><span>ORBITAL SPEED</span><b>0.5 c</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch2">
+    <div class="chapter-inner">
+      <p class="kicker">03 · PHOTON SPHERE</p>
+      <h2>Where Light Itself Orbits</h2>
+      <p>At one-and-a-half Schwarzschild radii, gravity bends light into a perfect circle. Photons go around and around forever. If you looked sideways here, you would see the back of your own head.</p>
+      <ul class="facts">
+        <li><span>RADIUS</span><b>1.5 R<sub>s</sub></b></li>
+        <li><span>ORBITING</span><b>LIGHT</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch3">
+    <div class="chapter-inner">
+      <p class="kicker">04 · POINT OF NO RETURN</p>
+      <h2>The Edge of Forever</h2>
+      <p>Time itself is slowing down for you now. To a distant observer you would appear to freeze at this boundary — redshifted, dimming, never quite seen to cross. From your seat, the fall feels perfectly normal. That is the cruelest part.</p>
+      <ul class="facts">
+        <li><span>TIME DILATION</span><b>→ ∞</b></li>
+        <li><span>ESCAPE</span><b>STILL POSSIBLE</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch4">
+    <div class="chapter-inner">
+      <p class="kicker">05 · EVENT HORIZON</p>
+      <h2>Crossing</h2>
+      <p>You feel nothing. No flash, no wall, no alarm. But behind you the universe squeezes into a shrinking disc of light — and every direction ahead now points to the center. There is no path back. There never was, from here.</p>
+      <ul class="facts">
+        <li><span>ESCAPE VELOCITY</span><b>c</b></li>
+        <li><span>RETURN</span><b>IMPOSSIBLE</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch5">
+    <div class="chapter-inner">
+      <p class="kicker">06 · SPAGHETTIFICATION</p>
+      <h2>Stretched Thin</h2>
+      <p>Gravity pulls your feet harder than your head — the difference grows with every meter. Tidal forces are drawing you out like dough, atom by atom, into a long thin stream of what you used to be.</p>
+      <ul class="facts">
+        <li><span>TIDAL FORCE</span><b>LETHAL</b></li>
+        <li><span>YOU</span><b>1 ATOM WIDE</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter" id="ch6">
+    <div class="chapter-inner">
+      <p class="kicker">07 · SINGULARITY</p>
+      <h2>The End of the Map</h2>
+      <p>Every path through space and time converges here, where density becomes infinite and the equations stop working. What happens at the center is unknown to physics. Perhaps nothing. Perhaps everything.</p>
+      <ul class="facts">
+        <li><span>DENSITY</span><b>∞</b></li>
+        <li><span>BEYOND</span><b>UNKNOWN</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="finale">
+    <p class="finale-title">You reached the singularity.</p>
+    <p class="finale-sub">Thanks for falling with us.</p>
+    <p class="crafted">Crafted by <b>Aman Singh</b></p>
+    <p class="siblings">
+      <a href="https://amanxdev0.github.io/helios/">HELIOS</a> ·
+      <a href="https://amanxdev0.github.io/abyss/">ABYSS</a> ·
+      <a href="https://amanxdev0.github.io/scrollfilm-3d/">SCROLLFILM</a>
+    </p>
+  </footer>
+
+</main>
+
+<p class="rm-note" id="rmnote" hidden>Reduced-motion mode: showing a still frame. Scroll for chapters.</p>
+
+<script type="module" src="js/horizon.js?v=1"></script>
+</body>
+</html>
