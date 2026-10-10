@@ -2,7 +2,7 @@
 
 A cinematic scroll-driven 3D dive from deep space into the heart of a black hole — built with Three.js. Scroll is the playhead: seven chapters carry the camera from a distant view of the accretion disk, through the photon sphere, across the event horizon, and down to the singularity.
 
-Live: `https://amanxdev0.github.io/event-horizon/` (after Pages is enabled)
+Live: https://amanxdev0.github.io/event-horizon/
 
 ## The journey
 
