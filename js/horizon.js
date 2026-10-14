@@ -187,6 +187,80 @@ const glow = new THREE.Sprite(new THREE.SpriteMaterial({
 glow.scale.set(190, 190, 1);
 hole.add(glow);
 
+/* secondary photon ring — faint echo, pulses out of phase with the main ring */
+const photonRing2 = new THREE.Mesh(
+  new THREE.TorusGeometry(16.9, 0.12, 8, 128),
+  new THREE.MeshBasicMaterial({
+    color: 0xffd9a0, transparent: true, opacity: 0.3,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  })
+);
+photonRing2.rotation.x = -Math.PI / 2 + 0.18;
+hole.add(photonRing2);
+
+/* hawking radiation — quantum shimmer hugging the horizon */
+const HAWK_N = 420;
+const hawkGeo = new THREE.BufferGeometry();
+{
+  const hp = new Float32Array(HAWK_N * 3);
+  const hx = new Float32Array(HAWK_N);
+  for (let i = 0; i < HAWK_N; i++) {
+    const r = rnd(10.6, 13.5);
+    const th = rnd(Math.PI * 2);
+    const ph = Math.acos(rnd(-1, 1));
+    hp[i * 3] = r * Math.sin(ph) * Math.cos(th);
+    hp[i * 3 + 1] = r * Math.cos(ph);
+    hp[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th);
+    hx[i] = rnd(Math.PI * 2);
+  }
+  hawkGeo.setAttribute('position', new THREE.BufferAttribute(hp, 3));
+  hawkGeo.setAttribute('aPhase', new THREE.BufferAttribute(hx, 1));
+}
+const hawkUniforms = { uTime: { value: 0 }, uAlpha: { value: 0 } };
+const hawking = new THREE.Points(hawkGeo, new THREE.ShaderMaterial({
+  uniforms: hawkUniforms,
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    attribute float aPhase;
+    uniform float uTime;
+    varying float vTw;
+    void main() {
+      float sp = 1.5 + fract(aPhase * 0.159) * 2.5;
+      vTw = 0.3 + 0.7 * (0.5 + 0.5 * sin(uTime * sp + aPhase * 7.0));
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = 150.0 / max(1.0, -mv.z);
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader: `
+    uniform float uAlpha;
+    varying float vTw;
+    void main() {
+      float d = length(gl_PointCoord - 0.5);
+      float a = smoothstep(0.5, 0.06, d) * vTw * uAlpha;
+      gl_FragColor = vec4(vec3(0.62, 0.82, 1.0) * (0.4 + a), a);
+    }`,
+}));
+hole.add(hawking);
+
+/* warp streaks — speed lines that ignite during the crossing */
+const STREAKS = 130;
+const streakGeo = new THREE.BufferGeometry();
+const streakPos = new Float32Array(STREAKS * 6);
+const streakSeed = [];
+for (let i = 0; i < STREAKS; i++) {
+  const a = rnd(Math.PI * 2);
+  const r = rnd(7, 55);
+  streakSeed.push({ x: Math.cos(a) * r, y: Math.sin(a) * r, z: rnd(-50, 320) });
+}
+streakGeo.setAttribute('position', new THREE.BufferAttribute(streakPos, 3));
+const streakMat = new THREE.LineBasicMaterial({
+  color: 0x8fb8ff, transparent: true, opacity: 0,
+  blending: THREE.AdditiveBlending, depthWrite: false,
+});
+const streaks = new THREE.LineSegments(streakGeo, streakMat);
+streaks.frustumCulled = false;
+scene.add(streaks);
+
 /* ---------------- chapters & camera stops ---------------- */
 const STOPS = [
   { chapter: 0, at: 0.35, pos: [0, 70, 300],   look: [0, 0, 0],   zone: 'DEEP SPACE' },
@@ -300,6 +374,32 @@ function frame(now) {
   diskUniforms.uTime.value += dt;
   disk.rotation.z += dt * (0.25 + p * 1.4);
   photonRing.rotation.z -= dt * (0.4 + p * 2.0);
+  /* photon ring pulse — heartbeat quickens as you fall in */
+  const pulseHz = 1.1 + p * 3.4;
+  const pulsePh = now * 0.001 * Math.PI * 2 * pulseHz;
+  const pulse = 0.5 + 0.5 * Math.sin(pulsePh);
+  photonRing.material.opacity = 0.7 + 0.3 * pulse;
+  const breathe = 1 + 0.02 * Math.sin(pulsePh + 1.2);
+  photonRing.scale.set(breathe, breathe, 1);
+  photonRing2.material.opacity = 0.16 + 0.22 * (1 - pulse);
+  photonRing2.rotation.z += dt * (0.3 + p * 1.6);
+  /* hawking radiation shimmer */
+  hawkUniforms.uTime.value = now * 0.001;
+  hawkUniforms.uAlpha.value = env(p, 0.34, 0.5, 0.74, 0.9);
+  hawking.rotation.y += dt * 0.06;
+  /* warp streaks during the crossing */
+  const warp = env(p, 0.52, 0.68, 0.9, 1.0);
+  streakMat.opacity = warp * 0.6;
+  if (warp > 0.002) {
+    const wlen = 3 + warp * 34;
+    for (let i = 0; i < STREAKS; i++) {
+      const s = streakSeed[i];
+      const o = i * 6;
+      streakPos[o] = s.x;     streakPos[o + 1] = s.y;     streakPos[o + 2] = s.z;
+      streakPos[o + 3] = s.x; streakPos[o + 4] = s.y;     streakPos[o + 5] = s.z - wlen;
+    }
+    streakGeo.attributes.position.needsUpdate = true;
+  }
   const arcPulse = 0.65 + 0.2 * Math.sin(now * 0.0016);
   arcTop.material.opacity = arcPulse;
   arcBottom.material.opacity = arcPulse;
